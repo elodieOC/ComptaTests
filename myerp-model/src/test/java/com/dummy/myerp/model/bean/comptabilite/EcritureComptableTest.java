@@ -48,11 +48,7 @@ public class EcritureComptableTest {
         vEcriture.getListLigneEcriture().add(this.createLigne(1, "200.50", null));
         vEcriture.getListLigneEcriture().add(this.createLigne(1, "100.50", "33"));
         Assert.assertEquals(vEcriture.getTotalDebit().toString(), "301.00");
-
-        vEcriture.getListLigneEcriture().clear();
-        vEcriture.getListLigneEcriture().add(this.createLigne(1, "200", null));
-        vEcriture.getListLigneEcriture().add(this.createLigne(1, "100", "33"));
-        Assert.assertNotEquals(vEcriture.getTotalDebit().toString(), "301.00");
+        Assert.assertNotEquals(vEcriture.getTotalDebit().toString(), null);
     }
 
     @Test
@@ -62,10 +58,6 @@ public class EcritureComptableTest {
         vEcriture.getListLigneEcriture().add(this.createLigne(1, "200.50", null));
         vEcriture.getListLigneEcriture().add(this.createLigne(1, "100.50", "33"));
         Assert.assertEquals(vEcriture.getTotalCredit().toString(), "33");
-
-        vEcriture.getListLigneEcriture().clear();
-        vEcriture.getListLigneEcriture().add(this.createLigne(1, "200", null));
-        vEcriture.getListLigneEcriture().add(this.createLigne(1, "100", "33"));
         Assert.assertNotEquals(vEcriture.getTotalCredit().toString(), null);
     }
 
@@ -76,6 +68,10 @@ public class EcritureComptableTest {
         ecritureComptable.setLibelle("Câble ethernet");
         Assert.assertEquals(ecritureComptable.toString(), "EcritureComptable{id=-1, journal=null, reference='null', " +
                 "date=null, libelle='Câble ethernet', totalDebit=0, totalCredit=0, listLigneEcriture=[\n" +
+                "\n" +
+                "]}");
+        Assert.assertNotEquals(ecritureComptable.toString(), "EcritureComptable{id=-1, journal=null, reference='null', " +
+                "date=null, libelle='tapis de souris', totalDebit=0, totalCredit=0, listLigneEcriture=[\n" +
                 "\n" +
                 "]}");
     }
