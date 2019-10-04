@@ -1,20 +1,19 @@
 package com.dummy.myerp.business.impl.manager;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Set;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import com.dummy.myerp.model.bean.comptabilite.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.TransactionStatus;
 import com.dummy.myerp.business.contrat.manager.ComptabiliteManager;
 import com.dummy.myerp.business.impl.AbstractBusinessManager;
-import com.dummy.myerp.model.bean.comptabilite.CompteComptable;
-import com.dummy.myerp.model.bean.comptabilite.EcritureComptable;
-import com.dummy.myerp.model.bean.comptabilite.JournalComptable;
-import com.dummy.myerp.model.bean.comptabilite.LigneEcritureComptable;
 import com.dummy.myerp.technical.exception.FunctionalException;
 import com.dummy.myerp.technical.exception.NotFoundException;
 
@@ -55,25 +54,78 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
         return getDaoProxy().getComptabiliteDao().getListEcritureComptable();
     }
 
+    @Override
+    public List<SequenceEcritureComptable> getListSequenceEcritureComptable(Integer pAnnee) {
+        return  getDaoProxy().getComptabiliteDao().getListSequenceEcritureComptable(pAnnee);
+    }
     /**
      * {@inheritDoc}
      */
     // TODO à tester
     @Override
     public synchronized void addReference(EcritureComptable pEcritureComptable) {
-        // TODO à implémenter
         // Bien se réferer à la JavaDoc de cette méthode !
         /* Le principe :
                 1.  Remonter depuis la persitance la dernière valeur de la séquence du journal pour l'année de l'écriture
-                    (table sequence_ecriture_comptable)
-                2.  * S'il n'y a aucun enregistrement pour le journal pour l'année concernée :
-                        1. Utiliser le numéro 1.
-                    * Sinon :
-                        1. Utiliser la dernière valeur + 1
-                3.  Mettre à jour la référence de l'écriture avec la référence calculée (RG_Compta_5)
-                4.  Enregistrer (insert/update) la valeur de la séquence en persitance
-                    (table sequence_ecriture_comptable)
-         */
+                    (table sequence_ecriture_comptable)*/
+
+        //récupère l'année de l'écriture comptable
+        Date ecritureDate = pEcritureComptable.getDate();
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(ecritureDate);
+        int anneeEcriture = calendar.get(Calendar.YEAR);
+
+        //prépare le formattage de la dernière valeur de la séquence du journal
+        String valeurRefString ="";
+        int valeurRefInt = 0;
+        DecimalFormat decimalFormat = new DecimalFormat("00000");
+
+        //récupère le code journal de l'écriture
+        String codeJournalEcriture = pEcritureComptable.getJournal().getCode();
+
+        // Récupère la liste de sequence du journal pour l'année de l'ecriture
+        List<SequenceEcritureComptable> listSequenceEcritureComptable = this.getListSequenceEcritureComptable(anneeEcriture);
+
+      /* 2.  * S'il n'y a aucun enregistrement pour le code_journal pour l'année concernée :
+                1. Utiliser le numéro 1.
+             * Sinon :
+                1. Utiliser la dernière valeur + 1 */
+        for (int i = 0; i < listSequenceEcritureComptable.size(); i++) {
+            if (pEcritureComptable.getJournal().getCode().equals(listSequenceEcritureComptable.get(i).getJournalCode())) {
+                valeurRefInt = listSequenceEcritureComptable.get(i).getDerniereValeur() + 1;
+                valeurRefString = decimalFormat.format(valeurRefInt); // exemple 0025
+            }
+            else{
+                valeurRefInt = 1;
+                valeurRefString = decimalFormat.format(valeurRefInt); //0001
+            }
+        }
+
+      //3.  Mettre à jour la référence de l'écriture avec la référence calculée (RG_Compta_5)
+        // Creation de la nouvelle reference
+        String reference = pEcritureComptable.getJournal().getCode() + "-" + anneeEcriture + "/"+ valeurRefString;
+        // Maj
+        pEcritureComptable.setReference(reference);
+        // Maj en BDD
+        try {
+            this.updateEcritureComptable(pEcritureComptable);
+        } catch (FunctionalException e) {
+            e.printStackTrace();
+        }
+
+      //4.  Enregistrer (insert/update) la valeur de la séquence en persitance (table sequence_ecriture_comptable)
+        SequenceEcritureComptable newSeq = new SequenceEcritureComptable();
+        newSeq.setJournalCode(pEcritureComptable.getJournal().getCode());
+        newSeq.setAnnee(anneeEcriture);
+        newSeq.setDerniereValeur(valeurRefInt);
+
+        if (valeurRefInt == 1) {
+            // Enregistrement avec insert
+            insertSequenceEcritureComptable(newSeq);
+        } else {
+            // Enregistrement avec update (maj bdd)
+            updateSequenceEcritureComptable(newSeq);
+        }
     }
 
     /**
@@ -133,7 +185,28 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
         }
 
         // TODO ===== RG_Compta_5 : Format et contenu de la référence
+        // ===== RG_Compta_5 : Format et contenu de la référence -> XX-AAAA/#####
         // vérifier que l'année dans la référence correspond bien à la date de l'écriture, idem pour le code journal...
+        String journalCode = pEcritureComptable.getJournal().getCode();
+        String codeReference = pEcritureComptable.getReference().substring(0, 2);
+        String anneeReference = pEcritureComptable.getReference().substring(3,7);
+
+        String anneeFormat = "yyyy";
+        DateFormat dateFormat = new SimpleDateFormat(anneeFormat);
+        String anneeEcritureComptable = dateFormat.format(pEcritureComptable.getDate());
+
+        // vérification code journal
+        if (journalCode.equals(codeReference)) {
+        } else {
+            throw  new FunctionalException(
+                    "Le journal code dans la référence doit être identique au journal code");
+        }
+        // vérification de la date sur la réference
+        if (anneeReference.equals(anneeEcritureComptable)) {
+        } else {
+            throw  new FunctionalException(
+                    "L'année dans la référence doit être identique à la date d'ecriture");
+        }
     }
 
 
@@ -204,6 +277,42 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
         TransactionStatus vTS = getTransactionManager().beginTransactionMyERP();
         try {
             getDaoProxy().getComptabiliteDao().deleteEcritureComptable(pId);
+            getTransactionManager().commitMyERP(vTS);
+            vTS = null;
+        } finally {
+            getTransactionManager().rollbackMyERP(vTS);
+        }
+    }
+
+    @Override
+    public void insertSequenceEcritureComptable(SequenceEcritureComptable pSequenceEcritureComptable) {
+        TransactionStatus vTS = getTransactionManager().beginTransactionMyERP();
+        try {
+            getDaoProxy().getComptabiliteDao().insertSequenceEcritureComptable(pSequenceEcritureComptable);
+            getTransactionManager().commitMyERP(vTS);
+            vTS = null;
+        } finally {
+            getTransactionManager().rollbackMyERP(vTS);
+        }
+    }
+
+    @Override
+    public void updateSequenceEcritureComptable(SequenceEcritureComptable pSequenceEcritureComptable) {
+        TransactionStatus vTS = getTransactionManager().beginTransactionMyERP();
+        try {
+            getDaoProxy().getComptabiliteDao().updateSequenceEcritureComptable(pSequenceEcritureComptable);
+            getTransactionManager().commitMyERP(vTS);
+            vTS = null;
+        } finally {
+            getTransactionManager().rollbackMyERP(vTS);
+        }
+    }
+
+    @Override
+    public void deleteSequenceEcritureComptable(SequenceEcritureComptable pSequenceEcritureComptable) {
+        TransactionStatus vTS = getTransactionManager().beginTransactionMyERP();
+        try {
+            getDaoProxy().getComptabiliteDao().deleteSequenceEcritureComptable(pSequenceEcritureComptable);
             getTransactionManager().commitMyERP(vTS);
             vTS = null;
         } finally {
