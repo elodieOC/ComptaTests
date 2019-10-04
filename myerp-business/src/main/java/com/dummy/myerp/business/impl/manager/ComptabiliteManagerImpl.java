@@ -58,6 +58,8 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
     public List<SequenceEcritureComptable> getListSequenceEcritureComptable(Integer pAnnee) {
         return  getDaoProxy().getComptabiliteDao().getListSequenceEcritureComptable(pAnnee);
     }
+
+
     /**
      * {@inheritDoc}
      */
@@ -76,7 +78,7 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
         int anneeEcriture = calendar.get(Calendar.YEAR);
 
         //prépare le formattage de la dernière valeur de la séquence du journal
-        String valeurRefString ="";
+        String valeurRefString = "";
         int valeurRefInt = 0;
         DecimalFormat decimalFormat = new DecimalFormat("00000");
 
@@ -90,16 +92,16 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
                 1. Utiliser le numéro 1.
              * Sinon :
                 1. Utiliser la dernière valeur + 1 */
-        for (int i = 0; i < listSequenceEcritureComptable.size(); i++) {
-            if (pEcritureComptable.getJournal().getCode().equals(listSequenceEcritureComptable.get(i).getJournalCode())) {
-                valeurRefInt = listSequenceEcritureComptable.get(i).getDerniereValeur() + 1;
-                valeurRefString = decimalFormat.format(valeurRefInt); // exemple 0025
-            }
-            else{
-                valeurRefInt = 1;
-                valeurRefString = decimalFormat.format(valeurRefInt); //0001
+        if (listSequenceEcritureComptable.size() == 0) {
+            valeurRefInt = 1;
+        } else {
+            for (int i = 0; i < listSequenceEcritureComptable.size(); i++) {
+                if (pEcritureComptable.getJournal().getCode().equals(listSequenceEcritureComptable.get(i).getJournalCode())) {
+                    valeurRefInt = listSequenceEcritureComptable.get(i).getDerniereValeur() + 1;
+                }
             }
         }
+        valeurRefString = decimalFormat.format(valeurRefInt);
 
       //3.  Mettre à jour la référence de l'écriture avec la référence calculée (RG_Compta_5)
         // Creation de la nouvelle reference
@@ -184,7 +186,6 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
                 "L'écriture comptable doit avoir au moins deux lignes : une ligne au débit et une ligne au crédit.");
         }
 
-        // TODO ===== RG_Compta_5 : Format et contenu de la référence
         // ===== RG_Compta_5 : Format et contenu de la référence -> XX-AAAA/#####
         // vérifier que l'année dans la référence correspond bien à la date de l'écriture, idem pour le code journal...
         String journalCode = pEcritureComptable.getJournal().getCode();

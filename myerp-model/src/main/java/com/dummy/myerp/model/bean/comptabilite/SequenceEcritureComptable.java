@@ -7,7 +7,6 @@ package com.dummy.myerp.model.bean.comptabilite;
 public class SequenceEcritureComptable {
 
     // ==================== Attributs ====================
-    //TODO noter l'ajout de journalcode
     /** Le code journal */
     private String journalCode;
     /** L'année */
@@ -66,7 +65,7 @@ public class SequenceEcritureComptable {
         final String vSEP = ", ";
         vStB.append("{")
                 .append("journalCode=").append(journalCode)
-            .append("annee=").append(annee)
+            .append(vSEP).append("annee=").append(annee)
             .append(vSEP).append("derniereValeur=").append(derniereValeur)
             .append("}");
         return vStB.toString();
