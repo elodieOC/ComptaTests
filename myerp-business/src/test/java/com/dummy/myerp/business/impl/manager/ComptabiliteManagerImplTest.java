@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,6 +57,7 @@ public class ComptabiliteManagerImplTest {
         ecritureTest.setJournal(new JournalComptable("AC", "Achat"));
         ecritureTest.setDate(java.sql.Date.valueOf("2018-10-04"));
         ecritureTest.setLibelle("Trombone");
+
 
     }
 
@@ -128,4 +130,74 @@ public class ComptabiliteManagerImplTest {
         manager.addReference(ecritureTest);
         Assert.assertEquals("AC-2018/00033",ecritureTest.getReference());
     }
+
+    @Test
+    public void checkEcritureComptableTest() throws Exception{
+        listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
+        when(this.mockComptaDao.getEcritureComptableByRef(anyString())).thenReturn(ecritureTest);
+        when(this.mockComptaDao.getListSequenceEcritureComptable(anyInt())).thenReturn(listeSequencesTest);
+        ecritureTest.setReference("AC-2018/00033");
+        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+                null, new BigDecimal(123),
+                null));
+        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+                null, null,
+                new BigDecimal(123)));
+        manager.checkEcritureComptable(ecritureTest);
+    }
+
+    @Test(expected = FunctionalException.class)
+    public void checkEcritureComptableTestNonEquilibree() throws Exception{
+        listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
+        when(this.mockComptaDao.getEcritureComptableByRef(anyString())).thenReturn(ecritureTest);
+        when(this.mockComptaDao.getListSequenceEcritureComptable(anyInt())).thenReturn(listeSequencesTest);
+        ecritureTest.setReference("AC-2018/00033");
+        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+                null, new BigDecimal(123),
+                null));
+        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+                null, new BigDecimal(123),
+                new BigDecimal(123)));
+        manager.checkEcritureComptable(ecritureTest);
+    }
+
+    @Test(expected = FunctionalException.class)
+    public void checkEcritureComptableTestAnneeRefDiffrentDateEcriture() throws Exception{
+        listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
+        when(this.mockComptaDao.getEcritureComptableByRef(anyString())).thenReturn(ecritureTest);
+        when(this.mockComptaDao.getListSequenceEcritureComptable(anyInt())).thenReturn(listeSequencesTest);
+        ecritureTest.setReference("AC-2019/00033");
+        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+                null, new BigDecimal(123),
+                null));
+        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+                null, null,
+                new BigDecimal(123)));
+        manager.checkEcritureComptable(ecritureTest);
+    }
+
+    @Test
+    public void checkEcritureComptableTestRefNonUnique() throws Exception{
+        ecritureTest.setReference("AC-2018/00033");
+        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+                null, new BigDecimal(123),
+                null));
+        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+                null, null,
+                new BigDecimal(123)));
+        when(this.mockComptaDao.getEcritureComptableByRef(anyString())).thenReturn(ecritureTest);
+
+        EcritureComptable vEcritureComptable = mock(EcritureComptable.class );
+        vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+                null, new BigDecimal(123),
+                null));
+        vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+                null, null,
+                new BigDecimal(123)));
+        when(vEcritureComptable.getId()).thenReturn(1);
+        when(vEcritureComptable.getReference()).thenReturn("AC-2018/00033");
+
+        manager.checkEcritureComptable(vEcritureComptable);
+    }
+
 }
