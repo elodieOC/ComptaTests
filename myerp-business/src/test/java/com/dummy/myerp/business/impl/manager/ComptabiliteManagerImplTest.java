@@ -178,11 +178,11 @@ public class ComptabiliteManagerImplTest {
         when(this.mockComptaDao.getEcritureComptableByRef(anyString())).thenReturn(ecritureTest);
         ecritureTest.setReference("AC-2018/00033");
         ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                null, new BigDecimal(123),
+                null, new BigDecimal("123"),
                 null));
         ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
                 null, null,
-                new BigDecimal(123)));
+                new BigDecimal("123")));
         manager.checkEcritureComptable(ecritureTest);
     }
 
