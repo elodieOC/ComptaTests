@@ -134,8 +134,12 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
      */
     @Override
     public void checkEcritureComptable(EcritureComptable pEcritureComptable) throws FunctionalException {
-        this.checkEcritureComptableUnit(pEcritureComptable);
+        this.checkEcritureComptableUnitRG2(pEcritureComptable);
+        this.checkEcritureComptableUnitRG3(pEcritureComptable);
+        this.checkEcritureComptableUnitRG5(pEcritureComptable);
+        this.checkEcritureComptableUnitRG7(pEcritureComptable);
         this.checkEcritureComptableContext(pEcritureComptable);
+        this.checkEcritureComptableUnit(pEcritureComptable);
     }
 
 
@@ -151,75 +155,98 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
         Set<ConstraintViolation<EcritureComptable>> vViolations = getConstraintValidator().validate(pEcritureComptable);
         if (!vViolations.isEmpty()) {
             throw new FunctionalException("L'écriture comptable ne respecte pas les règles de gestion.",
-                                          new ConstraintViolationException(
-                                              "L'écriture comptable ne respecte pas les contraintes de validation",
-                                              vViolations));
+                    new ConstraintViolationException(
+                            "L'écriture comptable ne respecte pas les contraintes de validation: "+vViolations,
+                            vViolations));
         }
+    }
 
+    /**
+     * Vérifie que l'Ecriture comptable est équilibrée
+     * @param pEcritureComptable
+     * @throws FunctionalException
+     */
+    protected void checkEcritureComptableUnitRG2(EcritureComptable pEcritureComptable) throws FunctionalException {
         // ===== RG_Compta_2 : Pour qu'une écriture comptable soit valide, elle doit être équilibrée
         if (!pEcritureComptable.isEquilibree()) {
             throw new FunctionalException("L'écriture comptable n'est pas équilibrée.");
         }
+    }
 
+    /**
+     * Vérifie que l'Ecriture comptable a au moins 2 lignes d'écriture
+     * @param pEcritureComptable
+     * @throws FunctionalException
+     */
+    protected void checkEcritureComptableUnitRG3(EcritureComptable pEcritureComptable) throws FunctionalException {
         // ===== RG_Compta_3 : une écriture comptable doit avoir au moins 2 lignes d'écriture (1 au débit, 1 au crédit)
         int vNbrCredit = 0;
         int vNbrDebit = 0;
         for (LigneEcritureComptable vLigneEcritureComptable : pEcritureComptable.getListLigneEcriture()) {
             if (BigDecimal.ZERO.compareTo(ObjectUtils.defaultIfNull(vLigneEcritureComptable.getCredit(),
-                                                                    BigDecimal.ZERO)) != 0) {
+                    BigDecimal.ZERO)) != 0) {
                 vNbrCredit++;
             }
             if (BigDecimal.ZERO.compareTo(ObjectUtils.defaultIfNull(vLigneEcritureComptable.getDebit(),
-                                                                    BigDecimal.ZERO)) != 0) {
+                    BigDecimal.ZERO)) != 0) {
                 vNbrDebit++;
             }
-            // ===== RG_Compta_7 : Les montants des lignes d'écritures peuvent comporter 2 chiffres maximum après la virgule.
-          if(vLigneEcritureComptable.getDebit() != null){
-              if(vLigneEcritureComptable.getDebit().scale() > 2){
-                  throw new FunctionalException(
-                          "Les montants des lignes d'écritures peuvent comporter 2 chiffres maximum après la virgule.");
-              }
-          }
-          if(vLigneEcritureComptable.getCredit() != null){
-              if(vLigneEcritureComptable.getCredit().scale() > 2){
-                  throw new FunctionalException(
-                          "Les montants des lignes d'écritures peuvent comporter 2 chiffres maximum après la virgule.");
-              }
-          }
         }
 
         // On test le nombre de lignes car si l'écriture à une seule ligne
         //      avec un montant au débit et un montant au crédit ce n'est pas valable
         if (pEcritureComptable.getListLigneEcriture().size() < 2 || vNbrCredit < 1 || vNbrDebit < 1) {
             throw new FunctionalException(
-                "L'écriture comptable doit avoir au moins deux lignes : une ligne au débit et une ligne au crédit.");
+                    "L'écriture comptable doit avoir au moins deux lignes : une ligne au débit et une ligne au crédit.");
         }
+    }
 
+    /**
+     * Vérifie que des lignes d'écritures peuvent comporter 2 chiffres maximum après la virgule.
+     * @param pEcritureComptable
+     * @throws FunctionalException
+     */
+    protected void checkEcritureComptableUnitRG7(EcritureComptable pEcritureComptable) throws FunctionalException {
+        // ===== RG_Compta_7 : Les montants des lignes d'écritures peuvent comporter 2 chiffres maximum après la virgule.
+        int excep = 0;
+        for (LigneEcritureComptable vLigneEcritureComptable : pEcritureComptable.getListLigneEcriture()) {
+            if (vLigneEcritureComptable.getDebit() != null) {
+                if (vLigneEcritureComptable.getDebit().scale() > 2) {excep++;}
+            }
+            if (vLigneEcritureComptable.getCredit() != null) {
+                if (vLigneEcritureComptable.getCredit().scale() > 2) {excep++;}
+            }
+        }
+        if(excep!=0) {
+            throw new FunctionalException(
+                    "Les montants des lignes d'écritures peuvent comporter 2 chiffres maximum après la virgule.");
+        }
+    }
+    /**
+     * Vérifie la validité de la référence de l'écriture comptable
+     * @param pEcritureComptable
+     * @throws FunctionalException
+     */
+    protected void checkEcritureComptableUnitRG5(EcritureComptable pEcritureComptable) throws FunctionalException {
       // ===== RG_Compta_5 : Format et contenu de la référence -> XX-AAAA/#####
         // vérifier que l'année dans la référence correspond bien à la date de l'écriture, idem pour le code journal...
         String journalCode = pEcritureComptable.getJournal().getCode();
         String codeReference = pEcritureComptable.getReference().substring(0, 2);
         String anneeReference = pEcritureComptable.getReference().substring(3,7);
-
         String anneeFormat = "yyyy";
         DateFormat dateFormat = new SimpleDateFormat(anneeFormat);
         String anneeEcritureComptable = dateFormat.format(pEcritureComptable.getDate());
-
         // vérification code journal
-        if (journalCode.equals(codeReference)) {
-        } else {
+        if (!journalCode.equals(codeReference)) {
             throw  new FunctionalException(
                     "Le journal code dans la référence doit être identique au journal code");
         }
         // vérification de la date sur la réference
-        if (anneeReference.equals(anneeEcritureComptable)) {
-        } else {
+        if (!anneeReference.equals(anneeEcritureComptable)) {
             throw  new FunctionalException(
                     "L'année dans la référence doit être identique à la date d'ecriture");
         }
     }
-
-
     /**
      * Vérifie que l'Ecriture comptable respecte les règles de gestion liées au contexte
      * (unicité de la référence, année comptable non cloturé...)
@@ -234,7 +261,6 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
                 // Recherche d'une écriture ayant la même référence
                 EcritureComptable vECRef = getDaoProxy().getComptabiliteDao().getEcritureComptableByRef(
                     pEcritureComptable.getReference());
-
                 // Si l'écriture à vérifier est une nouvelle écriture (id == null),
                 // ou si elle ne correspond pas à l'écriture trouvée (id != idECRef),
                 // c'est qu'il y a déjà une autre écriture avec la même référence
