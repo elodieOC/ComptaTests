@@ -17,15 +17,16 @@ public class LigneEcritureComptableTest {
         compteComptable.setLibelle("Achats de goodies Alice Cooper");
         ligneEcritureComptable.setCompteComptable(compteComptable);
         ligneEcritureComptable.setLibelle("CD mortel");
-        ligneEcritureComptable.setDebit(new BigDecimal(16.66));
+        ligneEcritureComptable.setDebit(new BigDecimal("16.66"));
         ligneEcritureComptable.setCredit(null);
 
-        Assert.assertEquals(ligneEcritureComptable.toString(), "LigneEcritureComptable{compteComptable=CompteComptable{numero=666, " +
+        Assert.assertEquals("LigneEcritureComptable{compteComptable=CompteComptable{numero=666, " +
                 "libelle='Achats de goodies Alice Cooper'}, " +
-                "libelle='CD mortel', debit=16.660000000000000142108547152020037174224853515625, credit=null}");
-        Assert.assertNotEquals(ligneEcritureComptable.toString(), "LigneEcritureComptable{compteComptable=CompteComptable{numero=777, " +
+                "libelle='CD mortel', debit=16.66, credit=null}",
+                ligneEcritureComptable.toString());
+        Assert.assertNotEquals( "LigneEcritureComptable{compteComptable=CompteComptable{numero=777, " +
                 "libelle='Achats de goodies Christophe Mae'}, " +
-                "libelle='CD mortellement ennuyant', debit=null, credit=null}");
+                "libelle='CD mortellement ennuyant', debit=null, credit=null}", ligneEcritureComptable.toString());
 
     }
 }

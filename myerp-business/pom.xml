@@ -135,7 +135,7 @@
                         <directory>src/test/resources</directory>
                     </testResource>
                     <testResource>
-                        <directory>src/test-business/resources</directory>
+                        <directory>src/test-business-integration/resources</directory>
                     </testResource>
                 </testResources>
             </build>

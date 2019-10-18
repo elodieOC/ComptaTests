@@ -173,17 +173,29 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
                                                                     BigDecimal.ZERO)) != 0) {
                 vNbrDebit++;
             }
+            // ===== RG_Compta_7 : Les montants des lignes d'écritures peuvent comporter 2 chiffres maximum après la virgule.
+          if(vLigneEcritureComptable.getDebit() != null){
+              if(vLigneEcritureComptable.getDebit().scale() > 2){
+                  throw new FunctionalException(
+                          "Les montants des lignes d'écritures peuvent comporter 2 chiffres maximum après la virgule.");
+              }
+          }
+          if(vLigneEcritureComptable.getCredit() != null){
+              if(vLigneEcritureComptable.getCredit().scale() > 2){
+                  throw new FunctionalException(
+                          "Les montants des lignes d'écritures peuvent comporter 2 chiffres maximum après la virgule.");
+              }
+          }
         }
+
         // On test le nombre de lignes car si l'écriture à une seule ligne
         //      avec un montant au débit et un montant au crédit ce n'est pas valable
-        if (pEcritureComptable.getListLigneEcriture().size() < 2
-            || vNbrCredit < 1
-            || vNbrDebit < 1) {
+        if (pEcritureComptable.getListLigneEcriture().size() < 2 || vNbrCredit < 1 || vNbrDebit < 1) {
             throw new FunctionalException(
                 "L'écriture comptable doit avoir au moins deux lignes : une ligne au débit et une ligne au crédit.");
         }
 
-        // ===== RG_Compta_5 : Format et contenu de la référence -> XX-AAAA/#####
+      // ===== RG_Compta_5 : Format et contenu de la référence -> XX-AAAA/#####
         // vérifier que l'année dans la référence correspond bien à la date de l'écriture, idem pour le code journal...
         String journalCode = pEcritureComptable.getJournal().getCode();
         String codeReference = pEcritureComptable.getReference().substring(0, 2);
