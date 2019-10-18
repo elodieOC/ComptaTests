@@ -14,16 +14,16 @@ before_install:
   - docker ps -a
 
 before_script:
-  - cd ../../src
+  - cd ../src
 
 script:
   - mvn test -Ptest-consumer,test-business
-  - cd ../docker/dev
+  - cd docker/dev
   - docker-compose stop
   - docker-compose rm -f
   - docker-compose up -d
   - docker ps -a
-  - cd ../../src
+  - cd ../src
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
