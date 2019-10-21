@@ -12,7 +12,7 @@ public class SequenceEcritureComptableTest {
         SequenceEcritureComptable sequenceEcritureComptable = new SequenceEcritureComptable();
         sequenceEcritureComptable.setAnnee(1998);
         sequenceEcritureComptable.setDerniereValeur(30);
-        Assert.assertEquals(sequenceEcritureComptable.toString(), "SequenceEcritureComptable{annee=1998, derniereValeur=30}");
+        Assert.assertEquals(sequenceEcritureComptable.toString(), "SequenceEcritureComptable{journalCode=null, annee=1998, derniereValeur=30}");
         Assert.assertNotEquals(sequenceEcritureComptable.toString(), "SequenceEcritureComptable{annee=2019, derniereValeur=13}");
 
     }
