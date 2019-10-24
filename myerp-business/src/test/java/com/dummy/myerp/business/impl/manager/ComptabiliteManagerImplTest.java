@@ -21,8 +21,7 @@ import com.dummy.myerp.technical.exception.FunctionalException;
 import org.junit.runner.RunWith;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ComptabiliteManagerImplTest {
@@ -39,6 +38,8 @@ public class ComptabiliteManagerImplTest {
     private SequenceEcritureComptable sequenceTest;
     private EcritureComptable ecritureTest;
     private List<SequenceEcritureComptable> listeSequencesTest;
+    private LigneEcritureComptable ligneEcritureDebit;
+    private LigneEcritureComptable ligneEcritureCredit;
 
     @Before
     public void setUp() throws Exception {
@@ -47,9 +48,15 @@ public class ComptabiliteManagerImplTest {
         AbstractBusinessManager.configure(null, this.mockDaoProxy, this.mockTransactionManager);
 
         manager = new ComptabiliteManagerImpl();
-        sequenceTest = new SequenceEcritureComptable();
         listeSequencesTest = new ArrayList<>();
         ecritureTest = new EcritureComptable();
+        sequenceTest = new SequenceEcritureComptable("AC", 2018, 32);
+        ligneEcritureDebit = new LigneEcritureComptable(new CompteComptable(1),
+                null, new BigDecimal("123"),
+                null);
+        ligneEcritureCredit = new LigneEcritureComptable(new CompteComptable(1),
+                null, null,
+                new BigDecimal("123"));
 
         // Set du jeu de données
         ecritureTest.setId(1);
@@ -68,12 +75,8 @@ public class ComptabiliteManagerImplTest {
         vEcritureComptable.setDate(new Date());
         vEcritureComptable.setLibelle("Libelle");
         vEcritureComptable.setReference("AC-2019/00033");
-        vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                                                                                 null, new BigDecimal("123"),
-                                                                                 null));
-        vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(2),
-                                                                                 null, null,
-                                                                                 new BigDecimal("123")));
+        vEcritureComptable.getListLigneEcriture().add(ligneEcritureDebit);
+        vEcritureComptable.getListLigneEcriture().add(ligneEcritureCredit);
         manager.checkEcritureComptableUnit(vEcritureComptable);
     }
 
@@ -85,24 +88,18 @@ public class ComptabiliteManagerImplTest {
 
     @Test(expected = Test.None.class)
     public void checkEcritureComptableRG2() throws Exception {
-        listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
+        listeSequencesTest.add(sequenceTest);
         ecritureTest.setReference("AC-2018/00033");
-        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                null, new BigDecimal("123"),
-                null));
-        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                null, null,
-                new BigDecimal("123")));
+        ecritureTest.getListLigneEcriture().add(ligneEcritureDebit);
+        ecritureTest.getListLigneEcriture().add(ligneEcritureCredit);
         manager.checkEcritureComptableUnitRG2(ecritureTest);
     }
 
     @Test(expected = FunctionalException.class)
     public void checkEcritureComptableRG2NonEquilibree() throws Exception{
-        listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
+        listeSequencesTest.add(sequenceTest);
         ecritureTest.setReference("AC-2018/00033");
-        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                null, new BigDecimal("123"),
-                null));
+        ecritureTest.getListLigneEcriture().add(ligneEcritureDebit);
         ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
                 null, null,
                 new BigDecimal("1234")));
@@ -111,9 +108,7 @@ public class ComptabiliteManagerImplTest {
     @Test (expected = FunctionalException.class)
     public void checkEcritureComptableRG3() throws Exception {
         ecritureTest.setReference("AC-2018/00033");
-        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                null, new BigDecimal("123"),
-                null));
+        ecritureTest.getListLigneEcriture().add(ligneEcritureDebit);
         manager.checkEcritureComptableUnitRG3(ecritureTest);
     }
 
@@ -126,7 +121,7 @@ public class ComptabiliteManagerImplTest {
     }
     @Test(expected = Test.None.class)
     public void checkEcritureComptableRG5AvecSequenceExistante() throws NotFoundException {
-        listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
+        listeSequencesTest.add(sequenceTest);
         when(this.mockComptaDao.getListSequenceEcritureComptable(anyInt())).thenReturn(listeSequencesTest);
         manager.addReference(ecritureTest);
         Assert.assertEquals("AC-2018/00033",ecritureTest.getReference());
@@ -134,27 +129,19 @@ public class ComptabiliteManagerImplTest {
 
     @Test(expected = FunctionalException.class)
     public void checkEcritureComptableRG5AnneeRefDifferentDateEcriture() throws Exception{
-        listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
+        listeSequencesTest.add(sequenceTest);
         ecritureTest.setReference("AC-2019/00033");
-        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                null, new BigDecimal("123"),
-                null));
-        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                null, null,
-                new BigDecimal("123")));
+        ecritureTest.getListLigneEcriture().add(ligneEcritureDebit);
+        ecritureTest.getListLigneEcriture().add(ligneEcritureCredit);
         manager.checkEcritureComptableUnitRG5(ecritureTest);
     }
 
     @Test(expected = FunctionalException.class)
     public void checkEcritureComptableRG5CodeJournalDifferentDateEcriture() throws Exception{
-        listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
+        listeSequencesTest.add(sequenceTest);
         ecritureTest.setReference("BB-2018/00033");
-        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                null, new BigDecimal("123"),
-                null));
-        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                null, null,
-                new BigDecimal("123")));
+        ecritureTest.getListLigneEcriture().add(ligneEcritureDebit);
+        ecritureTest.getListLigneEcriture().add(ligneEcritureCredit);
         manager.checkEcritureComptableUnitRG5(ecritureTest);
     }
 
@@ -172,34 +159,26 @@ public class ComptabiliteManagerImplTest {
     }
     @Test(expected = Test.None.class)
     public void checkEcritureComptableTest() throws Exception{
-        listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
+        listeSequencesTest.add(sequenceTest);
         when(this.mockComptaDao.getEcritureComptableByRef(anyString())).thenReturn(ecritureTest);
         ecritureTest.setReference("AC-2018/00033");
-        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                null, new BigDecimal("123"),
-                null));
-        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                null, null,
-                new BigDecimal("123")));
+        ecritureTest.getListLigneEcriture().add(ligneEcritureDebit);
+        ecritureTest.getListLigneEcriture().add(ligneEcritureCredit);
         manager.checkEcritureComptable(ecritureTest);
     }
 
     @Test(expected = Test.None.class)
     public void checkEcritureComptableRG7() throws Exception{
-        listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
+        listeSequencesTest.add(sequenceTest);
         ecritureTest.setReference("AC-2018/00033");
-        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                null, new BigDecimal("123"),
-                null));
-        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
-                null, null,
-                new BigDecimal("123")));
+        ecritureTest.getListLigneEcriture().add(ligneEcritureDebit);
+        ecritureTest.getListLigneEcriture().add(ligneEcritureCredit);
         manager.checkEcritureComptableUnitRG7(ecritureTest);
     }
 
     @Test(expected = FunctionalException.class)
     public void checkEcritureComptableRG7Plus2ChiffresVirgules() throws Exception{
-        listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
+        listeSequencesTest.add(sequenceTest);
         ecritureTest.setReference("AC-2018/00033");
         ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
                 null, null,
@@ -215,9 +194,5 @@ public class ComptabiliteManagerImplTest {
         manager.insertEcritureComptable(ecritureTest);
 
     }
-
-
-
-
 
 }
