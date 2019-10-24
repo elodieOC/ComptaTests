@@ -20,8 +20,7 @@ import org.junit.Test;
 import com.dummy.myerp.technical.exception.FunctionalException;
 import org.junit.runner.RunWith;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -210,6 +209,13 @@ public class ComptabiliteManagerImplTest {
                 null));
         manager.checkEcritureComptableUnitRG7(ecritureTest);
     }
+
+    @Test(expected = FunctionalException.class)
+    public void testInsertEcritureComptableAppelCheckEcritureComptable() throws Exception {
+        manager.insertEcritureComptable(ecritureTest);
+
+    }
+
 
 
 
