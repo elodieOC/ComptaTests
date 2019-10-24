@@ -61,7 +61,7 @@ public class ComptabiliteManagerImplTest {
 
     }
 
-    @Test
+    @Test(expected = Test.None.class)
     public void checkEcritureComptableUnit() throws Exception {
         EcritureComptable vEcritureComptable;
         vEcritureComptable = new EcritureComptable();
@@ -84,7 +84,7 @@ public class ComptabiliteManagerImplTest {
         manager.checkEcritureComptableUnit(vEcritureComptable);
     }
 
-    @Test
+    @Test(expected = Test.None.class)
     public void checkEcritureComptableRG2() throws Exception {
         listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
         ecritureTest.setReference("AC-2018/00033");
@@ -119,13 +119,13 @@ public class ComptabiliteManagerImplTest {
     }
 
 
-    @Test
+    @Test(expected = Test.None.class)
     public void checkEcritureComptableRG5PasDeSequenceExistante() throws NotFoundException {
         when(this.mockComptaDao.getListSequenceEcritureComptable(anyInt())).thenReturn(listeSequencesTest);
         manager.addReference(ecritureTest);
         Assert.assertEquals("AC-2018/00001",ecritureTest.getReference());
     }
-    @Test
+    @Test(expected = Test.None.class)
     public void checkEcritureComptableRG5AvecSequenceExistante() throws NotFoundException {
         listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
         when(this.mockComptaDao.getListSequenceEcritureComptable(anyInt())).thenReturn(listeSequencesTest);
@@ -171,8 +171,7 @@ public class ComptabiliteManagerImplTest {
 
         manager.checkEcritureComptableContext(vEcritureComptable);
     }
-
-    @Test
+    @Test(expected = Test.None.class)
     public void checkEcritureComptableTest() throws Exception{
         listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
         when(this.mockComptaDao.getEcritureComptableByRef(anyString())).thenReturn(ecritureTest);
@@ -186,7 +185,7 @@ public class ComptabiliteManagerImplTest {
         manager.checkEcritureComptable(ecritureTest);
     }
 
-    @Test
+    @Test(expected = Test.None.class)
     public void checkEcritureComptableRG7() throws Exception{
         listeSequencesTest.add(new SequenceEcritureComptable("AC", 2018, 32));
         ecritureTest.setReference("AC-2018/00033");

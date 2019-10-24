@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 
 public class LigneEcritureComptableTest {
 
-    @Test
+    @Test(expected = Test.None.class)
     public void toString1() {
         LigneEcritureComptable ligneEcritureComptable = new LigneEcritureComptable();
         CompteComptable compteComptable = new CompteComptable();

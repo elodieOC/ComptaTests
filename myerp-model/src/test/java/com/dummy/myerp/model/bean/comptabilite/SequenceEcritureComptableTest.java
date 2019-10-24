@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 
 public class SequenceEcritureComptableTest {
 
-    @Test
+    @Test(expected = Test.None.class)
     public void toString1() {
         SequenceEcritureComptable sequenceEcritureComptable = new SequenceEcritureComptable();
         sequenceEcritureComptable.setAnnee(1998);

@@ -20,7 +20,7 @@ public class EcritureComptableTest {
         return vRetour;
     }
 
-    @Test
+    @Test (expected = Test.None.class)
     public void isEquilibree() {
         EcritureComptable vEcriture;
         vEcriture = new EcritureComptable();
@@ -41,7 +41,7 @@ public class EcritureComptableTest {
         Assert.assertFalse(vEcriture.toString(), vEcriture.isEquilibree());
     }
 
-    @Test
+    @Test (expected = Test.None.class)
     public void getTotalDebit() {
         EcritureComptable vEcriture;
         vEcriture = new EcritureComptable();
@@ -51,7 +51,7 @@ public class EcritureComptableTest {
         Assert.assertNotEquals(vEcriture.getTotalDebit().toString(), null);
     }
 
-    @Test
+    @Test (expected = Test.None.class)
     public void getTotalCredit() {
         EcritureComptable vEcriture;
         vEcriture = new EcritureComptable();
@@ -61,7 +61,7 @@ public class EcritureComptableTest {
         Assert.assertNotEquals(vEcriture.getTotalCredit().toString(), null);
     }
 
-    @Test
+    @Test (expected = Test.None.class)
     public void toString1() {
         EcritureComptable ecritureComptable = new EcritureComptable();
         ecritureComptable.setId(-1);
