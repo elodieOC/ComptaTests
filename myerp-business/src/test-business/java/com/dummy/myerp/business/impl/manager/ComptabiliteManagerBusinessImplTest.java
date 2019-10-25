@@ -37,6 +37,17 @@ public class ComptabiliteManagerBusinessImplTest extends BusinessTestCase {
                 null, null,
                 new BigDecimal("123")));
 
+        sequenceTest = new SequenceEcritureComptable("AC", 1984, 24);
+
+    }
+
+    @Test
+    public void testInsertEcritureComptable() throws FunctionalException {
+        manager.insertEcritureComptable(ecritureTest);
+    }
+    @Test
+    public void testUpdateEcritureComptable() throws FunctionalException {
+
     }
 
 
@@ -44,25 +55,19 @@ public class ComptabiliteManagerBusinessImplTest extends BusinessTestCase {
     public void testDeleteEcritureComptable() throws FunctionalException {
 
     }
-    @Test
-    public void testInsertEcritureComptable() throws FunctionalException {
-
-    }
-    @Test
-    public void testUpdateEcritureComptable() throws FunctionalException {
-
-    }
-    @Test
-    public void testDeleteSequenceEcritureComptable() throws FunctionalException {
-
-    }
-    @Test
+    @Test(expected = Test.None.class)
     public void testInsertSequenceEcritureComptable() throws FunctionalException {
-
+        manager.insertSequenceEcritureComptable(sequenceTest);
     }
-    @Test
+    @Test(expected = Test.None.class)
     public void testUpdateSequenceEcritureComptable() throws FunctionalException {
+        sequenceTest.setDerniereValeur(25);
+        manager.updateSequenceEcritureComptable(sequenceTest);
+    }
 
+    @Test(expected = Test.None.class)
+    public void testDeleteSequenceEcritureComptable() throws FunctionalException {
+        manager.deleteSequenceEcritureComptable(sequenceTest);
     }
 
 
