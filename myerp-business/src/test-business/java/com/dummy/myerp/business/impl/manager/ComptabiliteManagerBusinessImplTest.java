@@ -41,19 +41,20 @@ public class ComptabiliteManagerBusinessImplTest extends BusinessTestCase {
 
     }
 
-    @Test
+    @Test(expected = Test.None.class)
     public void testInsertEcritureComptable() throws FunctionalException {
         manager.insertEcritureComptable(ecritureTest);
     }
-    @Test
+    @Test(expected = Test.None.class)
     public void testUpdateEcritureComptable() throws FunctionalException {
-
+        ecritureTest.setLibelle("Gomme");
+        manager.updateEcritureComptable(ecritureTest);
     }
 
 
-    @Test
+    @Test(expected = Test.None.class)
     public void testDeleteEcritureComptable() throws FunctionalException {
-
+        manager.deleteEcritureComptable(ecritureTest.getId());
     }
     @Test(expected = Test.None.class)
     public void testInsertSequenceEcritureComptable() throws FunctionalException {
