@@ -63,6 +63,14 @@ public class ComptabiliteDaoImplTest extends ConsumerTestCase {
     }
 
     @Test(expected=Test.None.class)
+    public void testGetListeSequenceEcritureComptable() throws NotFoundException{
+        daoProxy.insertSequenceEcritureComptable(sequenceTest);
+        List<SequenceEcritureComptable> sequenceEcritureComptablesList = daoProxy.getListSequenceEcritureComptable(1984);
+        assertTrue(!sequenceEcritureComptablesList.isEmpty());
+        daoProxy.deleteSequenceEcritureComptable(sequenceTest);
+    }
+
+    @Test(expected=Test.None.class)
     public void testGetEcritureComptable() throws NotFoundException{
         EcritureComptable ecritureComptable = daoProxy.getEcritureComptable(-1);
         assertTrue(ecritureComptable != null);
@@ -88,7 +96,6 @@ public class ComptabiliteDaoImplTest extends ConsumerTestCase {
     //TODO à compléter
     @Test
     public void testloadListLigneEcriture(){
-        daoProxy.deleteEcritureComptable(43);
     }
 
     @Test(expected = Test.None.class)
@@ -109,6 +116,20 @@ public class ComptabiliteDaoImplTest extends ConsumerTestCase {
         Assert.assertEquals("Gomme", daoProxy.getEcritureComptableByRef("AC-1984/00001").getLibelle());
         EcritureComptable toDelete = daoProxy.getEcritureComptableByRef("AC-1984/00001");
         daoProxy.deleteEcritureComptable(toDelete.getId());
+    }
+
+
+    @Test(expected = Test.None.class)
+    public void testUpdateSequenceEcritureComptable() throws FunctionalException, NotFoundException {
+        daoProxy.insertSequenceEcritureComptable(sequenceTest);
+        sequenceTest.setDerniereValeur(56);
+        daoProxy.updateSequenceEcritureComptable(sequenceTest);
+        SequenceEcritureComptable updated = new SequenceEcritureComptable();
+        for(SequenceEcritureComptable seq : daoProxy.getListSequenceEcritureComptable(1984)){
+            updated = seq;
+        }
+        Assert.assertTrue(updated.getDerniereValeur() == 56);
+        daoProxy.deleteSequenceEcritureComptable(sequenceTest);
     }
 
 
