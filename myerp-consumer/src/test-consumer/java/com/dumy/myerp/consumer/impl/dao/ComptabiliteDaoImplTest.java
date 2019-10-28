@@ -85,17 +85,11 @@ public class ComptabiliteDaoImplTest extends ConsumerTestCase {
     @Test(expected=NotFoundException.class)
     public void testGetEcritureComptableNotFound() throws NotFoundException{
         EcritureComptable ecritureComptable = daoProxy.getEcritureComptable(0);
-
     }
 
     @Test(expected=NotFoundException.class)
     public void testGetEcritureComptableByRefNotFound() throws NotFoundException{
         EcritureComptable ecritureComptable = daoProxy.getEcritureComptableByRef("XX-1984/00024");
-    }
-
-    //TODO à compléter
-    @Test
-    public void testloadListLigneEcriture(){
     }
 
     @Test(expected = Test.None.class)
