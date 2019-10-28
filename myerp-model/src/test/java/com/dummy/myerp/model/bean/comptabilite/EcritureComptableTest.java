@@ -57,8 +57,46 @@ public class EcritureComptableTest {
         vEcriture = new EcritureComptable();
         vEcriture.getListLigneEcriture().add(this.createLigne(1, "200.50", null));
         vEcriture.getListLigneEcriture().add(this.createLigne(1, "100.50", "33"));
-        Assert.assertEquals(vEcriture.getTotalCredit().toString(), "33");
-        Assert.assertNotEquals(vEcriture.getTotalCredit().toString(), null);
+        Assert.assertEquals("33", vEcriture.getTotalCredit().toString());
+        Assert.assertNotEquals(null, vEcriture.getTotalCredit().toString());
+    }
+
+    @Test (expected = Test.None.class)
+    public void getSetLibelle() {
+        EcritureComptable vEcriture;
+        vEcriture = new EcritureComptable();
+        vEcriture.setLibelle("Gobelet Recyclable");
+        Assert.assertEquals("Gobelet Recyclable", vEcriture.getLibelle());
+        Assert.assertNotEquals("Trombone", vEcriture.getLibelle());
+    }
+
+    @Test (expected = Test.None.class)
+    public void getSetDate() {
+        EcritureComptable vEcriture;
+        vEcriture = new EcritureComptable();
+        vEcriture.setDate(java.sql.Date.valueOf("1984-12-24"));
+        Assert.assertEquals("1984-12-24", vEcriture.getDate().toString());
+        Assert.assertNotEquals("2019-01-01", vEcriture.getDate().toString());
+    }
+
+    @Test (expected = Test.None.class)
+    public void getSetJournal() {
+        EcritureComptable vEcriture;
+        vEcriture = new EcritureComptable();
+        vEcriture.setJournal(new JournalComptable("TE", "Test"));
+        Assert.assertEquals("TE", vEcriture.getJournal().getCode());
+        Assert.assertEquals("Test", vEcriture.getJournal().getLibelle());
+        Assert.assertNotEquals("AC", vEcriture.getJournal().getCode());
+        Assert.assertNotEquals("Achat", vEcriture.getJournal().getLibelle());
+    }
+
+    @Test (expected = Test.None.class)
+    public void getSetReference() {
+        EcritureComptable vEcriture;
+        vEcriture = new EcritureComptable();
+        vEcriture.setReference("XM-1984/00001");
+        Assert.assertEquals("XM-1984/00001", vEcriture.getReference());
+        Assert.assertNotEquals("AC-2019/00032", vEcriture.getReference());
     }
 
     @Test (expected = Test.None.class)

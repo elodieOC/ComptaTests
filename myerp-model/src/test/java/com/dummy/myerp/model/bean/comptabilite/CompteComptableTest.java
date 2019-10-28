@@ -18,8 +18,25 @@ public class CompteComptableTest {
         CompteComptable compteComptable = new CompteComptable();
         compteComptable.setNumero(3);
         compteComptable.setLibelle("Compte Exemple");
-        Assert.assertEquals(compteComptable.toString(), "CompteComptable{numero=3, libelle='Compte Exemple'}");
-        Assert.assertNotEquals(compteComptable.toString(), "CompteComptable{numero=154, libelle='XXXXXXX'}");
+        Assert.assertEquals("CompteComptable{numero=3, libelle='Compte Exemple'}",compteComptable.toString());
+        Assert.assertNotEquals( "CompteComptable{numero=154, libelle='XXXXXXX'}", compteComptable.toString());
+    }
+
+    @Test(expected = Test.None.class)
+    public void getSetNumero() {
+        CompteComptable compteComptable = new CompteComptable();
+        compteComptable.setNumero(3);
+        Assert.assertEquals("3",compteComptable.getNumero().toString());
+        Assert.assertNotEquals("154",compteComptable.getNumero().toString());
+    }
+
+
+    @Test(expected = Test.None.class)
+    public void getSetLibelle() {
+        CompteComptable compteComptable = new CompteComptable();
+        compteComptable.setLibelle("Compte Exemple");
+        Assert.assertEquals("Compte Exemple",compteComptable.getLibelle());
+        Assert.assertNotEquals("XXXXXXXXXx",compteComptable.getLibelle());
     }
 
     @Test(expected = Test.None.class)
