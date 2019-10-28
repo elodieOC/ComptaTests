@@ -30,10 +30,10 @@ public class ComptabiliteManagerBusinessImplTest extends BusinessTestCase {
         ecritureTest.setDate(java.sql.Date.valueOf("1984-12-24"));
         ecritureTest.setLibelle("Trombone");
         ecritureTest.setReference("AC-1984/00001");
-        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(401),
                 null, new BigDecimal("123"),
                 null));
-        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(401),
                 null, null,
                 new BigDecimal("123")));
 
