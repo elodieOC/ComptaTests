@@ -168,6 +168,20 @@ public class ComptabiliteManagerImplTest {
     }
 
     @Test(expected = Test.None.class)
+    public void checkEcritureComptableTestNegatifRG4() throws Exception{
+        listeSequencesTest.add(sequenceTest);
+        when(this.mockComptaDao.getEcritureComptableByRef(anyString())).thenReturn(ecritureTest);
+        ecritureTest.setReference("AC-2018/00033");
+        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+                null, null,
+                new BigDecimal("-123")));
+        ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+                null, new BigDecimal("-123"),
+                null));
+        manager.checkEcritureComptable(ecritureTest);
+    }
+
+    @Test(expected = Test.None.class)
     public void checkEcritureComptableRG7() throws Exception{
         listeSequencesTest.add(sequenceTest);
         ecritureTest.setReference("AC-2018/00033");
