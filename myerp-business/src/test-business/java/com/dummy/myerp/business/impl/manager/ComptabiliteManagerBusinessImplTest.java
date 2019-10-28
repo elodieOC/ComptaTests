@@ -6,12 +6,11 @@ import com.dummy.myerp.testbusiness.business.BusinessTestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -21,6 +20,7 @@ public class ComptabiliteManagerBusinessImplTest extends BusinessTestCase {
     private ComptabiliteManagerImpl manager = new ComptabiliteManagerImpl();
     private EcritureComptable ecritureTest = new EcritureComptable();
     private SequenceEcritureComptable sequenceTest = new SequenceEcritureComptable();
+    private List<LigneEcritureComptable> listLigneEcritureTest = new ArrayList<>();
 
     @Before
     public void setupBefore() throws Exception{
@@ -44,16 +44,20 @@ public class ComptabiliteManagerBusinessImplTest extends BusinessTestCase {
     @Test(expected = Test.None.class)
     public void testInsertEcritureComptable() throws FunctionalException {
         manager.insertEcritureComptable(ecritureTest);
+        manager.deleteEcritureComptable(ecritureTest.getId());
     }
     @Test(expected = Test.None.class)
     public void testUpdateEcritureComptable() throws FunctionalException {
+        manager.insertEcritureComptable(ecritureTest);
         ecritureTest.setLibelle("Gomme");
         manager.updateEcritureComptable(ecritureTest);
+        manager.deleteEcritureComptable(ecritureTest.getId());
     }
 
 
     @Test(expected = Test.None.class)
     public void testDeleteEcritureComptable() throws FunctionalException {
+        manager.insertEcritureComptable(ecritureTest);
         manager.deleteEcritureComptable(ecritureTest.getId());
     }
     @Test(expected = Test.None.class)
