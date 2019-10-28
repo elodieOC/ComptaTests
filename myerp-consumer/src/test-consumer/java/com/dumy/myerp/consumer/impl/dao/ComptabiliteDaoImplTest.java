@@ -5,6 +5,7 @@ import com.dummy.myerp.model.bean.comptabilite.*;
 import com.dummy.myerp.technical.exception.FunctionalException;
 import com.dummy.myerp.technical.exception.NotFoundException;
 import com.dummy.myerp.testconsumer.consumer.ConsumerTestCase;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,16 +30,15 @@ public class ComptabiliteDaoImplTest extends ConsumerTestCase {
     @Before
     public void setupBefore() throws Exception{
         // Set du jeu de données
-        ecritureTest.setId(1);
         ecritureTest.setJournal(new JournalComptable("AC", "Achat"));
         ecritureTest.setDate(java.sql.Date.valueOf("1984-12-24"));
         ecritureTest.setLibelle("Trombone");
         ecritureTest.setReference("AC-1984/00001");
         ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(401),
-                null, new BigDecimal("123"),
+                "Fournisseurs", new BigDecimal("123"),
                 null));
         ecritureTest.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(401),
-                null, null,
+                "Fournisseurs", null,
                 new BigDecimal("123")));
 
         sequenceTest = new SequenceEcritureComptable("AC", 1984, 24);
@@ -77,11 +77,41 @@ public class ComptabiliteDaoImplTest extends ConsumerTestCase {
     @Test(expected=NotFoundException.class)
     public void testGetEcritureComptableNotFound() throws NotFoundException{
         EcritureComptable ecritureComptable = daoProxy.getEcritureComptable(0);
+
     }
 
     @Test(expected=NotFoundException.class)
     public void testGetEcritureComptableByRefNotFound() throws NotFoundException{
         EcritureComptable ecritureComptable = daoProxy.getEcritureComptableByRef("XX-1984/00024");
     }
+
+    //TODO à compléter
+    @Test
+    public void testloadListLigneEcriture(){
+        daoProxy.deleteEcritureComptable(43);
+    }
+
+    @Test(expected = Test.None.class)
+    public void testInsertEcritureComptable() throws FunctionalException, NotFoundException {
+        List<EcritureComptable> ecritureComptableList = daoProxy.getListEcritureComptable();
+        daoProxy.insertEcritureComptable(ecritureTest);
+        Assert.assertEquals(ecritureComptableList.size()+1, daoProxy.getListEcritureComptable().size());
+        EcritureComptable toDelete = daoProxy.getEcritureComptableByRef("AC-1984/00001");
+        daoProxy.deleteEcritureComptable(toDelete.getId());
+    }
+
+    @Test(expected = Test.None.class)
+    public void testUpdateEcritureComptable() throws FunctionalException, NotFoundException {
+        daoProxy.insertEcritureComptable(ecritureTest);
+        EcritureComptable toUpdate = daoProxy.getEcritureComptableByRef("AC-1984/00001");
+        toUpdate.setLibelle("Gomme");
+        daoProxy.updateEcritureComptable(toUpdate);
+        Assert.assertEquals("Gomme", daoProxy.getEcritureComptableByRef("AC-1984/00001").getLibelle());
+        EcritureComptable toDelete = daoProxy.getEcritureComptableByRef("AC-1984/00001");
+        daoProxy.deleteEcritureComptable(toDelete.getId());
+    }
+
+
+
 
 }

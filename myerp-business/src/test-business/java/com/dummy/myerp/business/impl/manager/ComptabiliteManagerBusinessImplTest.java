@@ -63,15 +63,19 @@ public class ComptabiliteManagerBusinessImplTest extends BusinessTestCase {
     @Test(expected = Test.None.class)
     public void testInsertSequenceEcritureComptable() throws FunctionalException {
         manager.insertSequenceEcritureComptable(sequenceTest);
+        manager.deleteSequenceEcritureComptable(sequenceTest);
     }
     @Test(expected = Test.None.class)
     public void testUpdateSequenceEcritureComptable() throws FunctionalException {
+        manager.insertSequenceEcritureComptable(sequenceTest);
         sequenceTest.setDerniereValeur(25);
         manager.updateSequenceEcritureComptable(sequenceTest);
+        manager.deleteSequenceEcritureComptable(sequenceTest);
     }
 
     @Test(expected = Test.None.class)
     public void testDeleteSequenceEcritureComptable() throws FunctionalException {
+        manager.insertSequenceEcritureComptable(sequenceTest);
         manager.deleteSequenceEcritureComptable(sequenceTest);
     }
 
