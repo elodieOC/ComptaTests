@@ -50,7 +50,6 @@ public class ComptabiliteDaoImplTest extends ConsumerTestCase {
         List<CompteComptable> listCompteComptable = daoProxy.getListCompteComptable();
         assertTrue(!listCompteComptable.isEmpty());
     }
-
     @Test(expected=Test.None.class)
     public void testGetListejournalComptable() {
         List<JournalComptable> journalComptableList = daoProxy.getListJournalComptable();
