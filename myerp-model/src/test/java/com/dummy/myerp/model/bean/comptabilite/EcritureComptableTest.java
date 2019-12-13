@@ -47,8 +47,8 @@ public class EcritureComptableTest {
         vEcriture = new EcritureComptable();
         vEcriture.getListLigneEcriture().add(this.createLigne(1, "200.50", null));
         vEcriture.getListLigneEcriture().add(this.createLigne(1, "100.50", "33"));
-        Assert.assertEquals(vEcriture.getTotalDebit().toString(), "301.00");
-        Assert.assertNotEquals(vEcriture.getTotalDebit().toString(), null);
+        Assert.assertEquals( "301.00",vEcriture.getTotalDebit().toString());
+        Assert.assertNotEquals( null,vEcriture.getTotalDebit().toString());
     }
 
     @Test (expected = Test.None.class)
